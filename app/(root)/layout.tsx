@@ -16,9 +16,9 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
           <Image src="/logo.svg" alt="logo" width={38} height={32} />
           <h2 className="text-primary-100">PrepWise</h2>
         </Link>
-        {/* <Button className="btn" onClick={signOut}>
+        <Button className="btn-primary" onClick={signOut}>
           Sign out
-        </Button> */}
+        </Button>
       </nav>
       <div>{children}</div>
     </div>
