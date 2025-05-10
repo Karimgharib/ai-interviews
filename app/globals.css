@@ -208,6 +208,9 @@
       @apply !w-full !bg-primary-200 !text-dark-100 hover:!bg-primary-200/80 !rounded-full !min-h-10 !font-bold !px-5 cursor-pointer;
     }
   }
+  .btnAuth {
+    @apply max-md:w-full w-[calc(50%-8px)] !bg-primary-200 !text-dark-100 hover:!bg-primary-200/80 !rounded-full !min-h-10 !font-bold !px-5 cursor-pointer;
+  }
 
   .call-view {
     @apply flex sm:flex-row flex-col gap-10 items-center justify-between w-full;

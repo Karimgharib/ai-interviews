@@ -6,7 +6,7 @@ import Link from "next/link";
 import DisplayTechIcons from "./DisplayTechIcons";
 
 const InterviewCard = ({
-  interviewId,
+  id,
   userId,
   role,
   type,
@@ -28,7 +28,7 @@ const InterviewCard = ({
             <p className="badge-text">{normalizedType}</p>
           </div>
           <Image
-            src={getRandomInterviewCover()}
+            src="/question.png"
             alt="cover-image"
             width={90}
             height={90}
@@ -59,11 +59,7 @@ const InterviewCard = ({
           <DisplayTechIcons techStack={techstack} />
           <Button asChild className="btn-primary">
             <Link
-              href={
-                feedback
-                  ? `/interview/${interviewId}/feedback`
-                  : `/interview/${interviewId}`
-              }
+              href={feedback ? `/interview/${id}/feedback` : `/interview/${id}`}
             >
               {feedback ? "Check Feedback" : "Start Interview"}
             </Link>

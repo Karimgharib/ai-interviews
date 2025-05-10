@@ -13,7 +13,11 @@ import FormField from "./FormField";
 import { useRouter } from "next/navigation";
 import {
   createUserWithEmailAndPassword,
+  GithubAuthProvider,
+  GoogleAuthProvider,
+  sendEmailVerification,
   signInWithEmailAndPassword,
+  signInWithPopup,
 } from "firebase/auth";
 import { auth, storage } from "@/firebase/client";
 import { signIn, signUp } from "@/lib/actions/auth.action";
@@ -44,6 +48,42 @@ const AuthForm = ({ type }: { type: FormType }) => {
     },
   });
 
+  // Google Sign-in handler
+  const handleGoogleSignIn = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      const idToken = await user.getIdToken();
+      await signIn({ email: user.email!, idToken });
+
+      toast.success("Signed in with Google");
+      router.push("/");
+    } catch (error) {
+      toast.error("Google sign-in failed");
+      console.error(error);
+    }
+  };
+
+  // GitHub Sign-in handler
+  const handleGithubSignIn = async () => {
+    const provider = new GithubAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      const idToken = await user.getIdToken();
+      await signIn({ email: user.email!, idToken });
+
+      toast.success("Signed in with GitHub");
+      router.push("/");
+    } catch (error) {
+      toast.error("GitHub sign-in failed");
+      console.error(error);
+    }
+  };
+
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -67,7 +107,8 @@ const AuthForm = ({ type }: { type: FormType }) => {
           return;
         }
 
-        toast.success("Account created successfully. please sign in.");
+        await sendEmailVerification(userCredential.user);
+        toast.success("Verification email sent. Please check your inbox.");
         router.push("/sign-in");
       } else {
         const { email, password } = values;
@@ -76,6 +117,12 @@ const AuthForm = ({ type }: { type: FormType }) => {
           email,
           password
         );
+
+        if (!userCredential.user.emailVerified) {
+          toast.error("Please verify your email before signing in.");
+          return;
+        }
+
         const idToken = await userCredential.user.getIdToken();
 
         if (!idToken) {
@@ -136,6 +183,19 @@ const AuthForm = ({ type }: { type: FormType }) => {
             </Button>
           </form>
         </Form>
+        <h6 className="text-center -my-5">Or</h6>
+
+        <div className="max-md:flex-col flex justify gap-4">
+          <Button className="btnAuth" onClick={handleGoogleSignIn}>
+            Continue with Google
+            <Image src="/google.png" alt="google" width={20} height={20} />
+          </Button>
+          <Button className="btnAuth" onClick={handleGithubSignIn}>
+            Continue with GitHub
+            <Image src="/github.png" alt="google" width={20} height={20} />
+          </Button>
+        </div>
+
         <p className="text-center">
           {isSignIn ? "No account yet?" : "Have an account already?"}
           <Link

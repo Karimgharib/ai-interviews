@@ -41,8 +41,6 @@ export async function signUp(params: SignUpParams) {
     await db.collection("users").doc(uid).set({
       name,
       email,
-      // profileURL,
-      // resumeURL,
     });
 
     return {
@@ -72,15 +70,38 @@ export async function signIn(params: SignInParams) {
 
   try {
     const userRecord = await auth.getUserByEmail(email);
-    if (!userRecord)
+    if (!userRecord) {
       return {
         success: false,
         message: "User does not exist. Create an account.",
       };
+    }
+
+    // 🔍 Check if user exists in Firestore
+    const userDoc = await db.collection("users").doc(userRecord.uid).get();
+
+    // 🆕 If not, create it
+    if (!userDoc.exists) {
+      await db
+        .collection("users")
+        .doc(userRecord.uid)
+        .set({
+          name: userRecord.displayName || "Unknown",
+          email: userRecord.email || email,
+          photoURL: userRecord.photoURL || null,
+          provider: userRecord.providerData?.[0]?.providerId || "firebase",
+          createdAt: new Date().toISOString(),
+        });
+    }
 
     await setSessionCookie(idToken);
+
+    return {
+      success: true,
+      message: "Signed in successfully",
+    };
   } catch (error: any) {
-    console.log("");
+    console.log("SignIn Error:", error);
 
     return {
       success: false,
@@ -129,38 +150,4 @@ export async function getCurrentUser(): Promise<User | null> {
 export async function isAuthenticated() {
   const user = await getCurrentUser();
   return !!user;
-}
-
-export async function getInterviewByUserId(
-  userId: string
-): Promise<Interview[] | null> {
-  const interviews = await db
-    .collection("interviews")
-    .where("userId", "==", userId)
-    .orderBy("createdAt", "desc")
-    .get();
-
-  return interviews.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Interview[];
-}
-
-export async function getLatestInterviews(
-  params: GetLatestInterviewsParams
-): Promise<Interview[] | null> {
-  const { userId, limit = 20 } = params;
-
-  const interviews = await db
-    .collection("interviews")
-    .orderBy("createdAt", "desc")
-    .where("finalized", "==", true)
-    .where("userId", "!=", userId)
-    .limit(limit)
-    .get();
-
-  return interviews.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Interview[];
 }
