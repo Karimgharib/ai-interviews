@@ -5,24 +5,38 @@ import { db } from "@/firebase/admin";
 import { getRandomInterviewCover } from "@/lib/utils";
 
 export async function POST(request: Request) {
-  const { type, role, level, techstack, amount, userid } = await request.json();
+  const { type, role, level, techstack, amount, userid, lang } =
+    await request.json();
+
+  const prompt =
+    lang === "ar"
+      ? `.باللغة العربية المصرية جهز أسئلة لمقابلة العمل
+     الدور الوظيفي هو ${role}.
+     مستوى الخبرة في العمل هو ${level}.
+     التكنولجيا المستخدمة في الوظيفة هي: ${techstack}.
+     التركيز بين الأسئلة السلوكية والتقنية يجب أن يميل نحو: ${type}.
+     عدد الأسئلة المطلوبة هو: ${amount}.
+     من فضلك قدم الأسئلة فقط، دون أي نص إضافي.
+     يجب أن تكون الأسئلة بتنسيق مثل هذا:
+     ["السؤال 1", "السؤال 2", "السؤال 3"]
+     
+     شكراً! <3`
+      : `Prepare questions for a job interview.
+     The job role is ${role}.
+     The job experience level is ${level}.
+     The tech stack used in the job is: ${techstack}.
+     The focus between behavioural and technical questions should lean towards: ${type}.
+     The amount of questions required is: ${amount}.
+     Please return only the questions, without any additional text.
+     Return the questions formatted like this:
+     ["Question 1", "Question 2", "Question 3"]
+     
+     Thank you! <3`;
 
   try {
     const { text: questions } = await generateText({
       model: google("gemini-2.0-flash-001"),
-      prompt: `Prepare questions for a job interview.
-        The job role is ${role}.
-        The job experience level is ${level}.
-        The tech stack used in the job is: ${techstack}.
-        The focus between behavioural and technical questions should lean towards: ${type}.
-        The amount of questions required is: ${amount}.
-        Please return only the questions, without any additional text.
-        The questions are going to be read by a voice assistant so do not use "/" or "*" or any other special characters which might break the voice assistant.
-        Return the questions formatted like this:
-        ["Question 1", "Question 2", "Question 3"]
-        
-        Thank you! <3
-    `,
+      prompt,
     });
 
     const interview = {

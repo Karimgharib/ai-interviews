@@ -1,5 +1,3 @@
-"use client";
-
 import InterviewCard from "@/components/InterviewCard";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/actions/auth.action";
@@ -9,12 +7,10 @@ import {
 } from "@/lib/actions/general.action";
 import Image from "next/image";
 import Link from "next/link";
-import axios from "axios";
-import { useRef } from "react";
+import Upload from "@/components/Upload";
 
 const page = async () => {
   const user = await getCurrentUser();
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // make that two requsts happen in same time
   const [userInterviews, latestInterviews] = await Promise.all([
@@ -23,35 +19,6 @@ const page = async () => {
   ]);
   const hasPastInterviews = userInterviews?.length > 0;
   const hasUpcomingInterviews = latestInterviews?.length > 0;
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const file = fileInputRef.current?.files?.[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await fetch(
-        "https://ai-interviews-livid.vercel.app/api/parse-resume",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to process");
-
-      const result = await response.json();
-      console.log("Success:", result);
-      alert("Interview questions generated!");
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Processing failed");
-    }
-  };
 
   return (
     <>
@@ -64,15 +31,7 @@ const page = async () => {
           <Button asChild className="btn-primary max-sm:w-full">
             <Link href="/interview">Make an interview</Link>
           </Button>
-          <form onSubmit={handleSubmit} encType="multipart/form-data">
-            <input
-              ref={fileInputRef}
-              type="file"
-              name="file"
-              accept="application/pdf"
-            />
-            <button type="submit">Extract Role & Skills</button>
-          </form>
+          <Upload />
         </div>
         <Image
           src="/robot.png"
