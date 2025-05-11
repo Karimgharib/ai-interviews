@@ -22,16 +22,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  webpack(config, { isServer }) {
-    if (!isServer) {
-      // Prevents 'child_process' from being bundled on the client-side
-      config.node = {
-        ...config.node,
-        child_process: "empty",
-      };
-    }
-    return config;
-  },
 };
 
 export default nextConfig;
