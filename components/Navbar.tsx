@@ -1,6 +1,5 @@
-import { CreditCard, LogOut, User, Workflow } from "lucide-react";
+import { LogOut, User, Workflow } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,7 +25,7 @@ const Navbar = async () => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <div className="flex items-center gap-2 cursor-pointer">
-            <h6>{user?.name}</h6>
+            <h6 className="max-sm:hidden">{user?.name}</h6>
             {!user?.photoURL ? (
               <Image
                 src="/user.png"

@@ -109,7 +109,6 @@ const Agent = ({
   const latestMessage = messages[messages.length - 1]?.content;
   const isCallInactiveOrFinished =
     callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED;
-  console.log(photoURL);
   return (
     <>
       <div className="call-view">
