@@ -5,23 +5,23 @@ import { db } from "@/firebase/admin";
 import { getRandomInterviewCover } from "@/lib/utils";
 
 export async function POST(request: Request) {
-  const { type, role, level, techstack, amount, userid, lang } =
-    await request.json();
+  const { type, role, level, techstack, amount, userid } = await request.json();
 
   const prompt =
-    lang === "ar"
-      ? `.باللغة العربية المصرية جهز أسئلة لمقابلة العمل
-     الدور الوظيفي هو ${role}.
-     مستوى الخبرة في العمل هو ${level}.
-     التكنولجيا المستخدمة في الوظيفة هي: ${techstack}.
-     التركيز بين الأسئلة السلوكية والتقنية يجب أن يميل نحو: ${type}.
-     عدد الأسئلة المطلوبة هو: ${amount}.
-     من فضلك قدم الأسئلة فقط، دون أي نص إضافي.
-     يجب أن تكون الأسئلة بتنسيق مثل هذا:
-     ["السؤال 1", "السؤال 2", "السؤال 3"]
-     
-     شكراً! <3`
-      : `Prepare questions for a job interview.
+    // lang === "ar"
+    //   ? `.باللغة العربية المصرية جهز أسئلة لمقابلة العمل
+    //  الدور الوظيفي هو ${role}.
+    //  مستوى الخبرة في العمل هو ${level}.
+    //  التكنولجيا المستخدمة في الوظيفة هي: ${techstack}.
+    //  التركيز بين الأسئلة السلوكية والتقنية يجب أن يميل نحو: ${type}.
+    //  عدد الأسئلة المطلوبة هو: ${amount}.
+    //  من فضلك قدم الأسئلة فقط، دون أي نص إضافي.
+    //  يجب أن تكون الأسئلة بتنسيق مثل هذا:
+    //  ["السؤال 1", "السؤال 2", "السؤال 3"]
+
+    //  شكراً! <3`
+    //   :
+    `Prepare questions for a job interview.
      The job role is ${role}.
      The job experience level is ${level}.
      The tech stack used in the job is: ${techstack}.

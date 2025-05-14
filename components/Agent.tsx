@@ -31,7 +31,6 @@ const Agent = ({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
   const [messages, setMessages] = useState<SavedMessage[]>([]);
-  const [lang, setLang] = useState("ar"); // Language state
 
   useEffect(() => {
     const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
@@ -77,19 +76,11 @@ const Agent = ({
 
   const handleCall = async () => {
     setCallStatus(CallStatus.CONNECTING);
-
-    // Choose the workflow ID based on the selected language
-    const workflowId =
-      lang === "ar"
-        ? process.env.NEXT_PUBLIC_VAPI_ARABIC_WORKFLOW_ID
-        : process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID;
-
     if (type === "generate") {
-      await vapi.start(workflowId!, {
+      await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
         variableValues: {
           username: userName,
           userid: userId,
-          lang,
         },
       });
     } else {
@@ -104,7 +95,6 @@ const Agent = ({
       await vapi.start(interviewer, {
         variableValues: {
           questions: formattedQuestions,
-          lang,
         },
       });
     }
