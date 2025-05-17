@@ -15,6 +15,7 @@ import { getCurrentUser, signOut } from "@/lib/actions/auth.action";
 
 const Navbar = async () => {
   const user = await getCurrentUser();
+
   return (
     <nav className="flex items-center justify-between">
       <Link href="/" className="flex items-center gap-2">

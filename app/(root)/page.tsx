@@ -8,6 +8,13 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import Upload from "@/components/Upload";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const page = async () => {
   const user = await getCurrentUser();
@@ -31,7 +38,7 @@ const page = async () => {
           <div className="flex flex-col gap-4 max-w-lg">
             <p className="text-sm">Generate interview by call with ai</p>
             <Button asChild className="btn-primary max-sm:w-full">
-              <Link href="/interview">Generate an English interview</Link>
+              <Link href="/interview">Generate</Link>
             </Button>
             {/* <Button asChild className="btn-primary">
               <Link href="/interview">Generate an Arabic interview</Link>
@@ -50,27 +57,50 @@ const page = async () => {
       </section>
       <section className="flex flex-col gap-6 mt-8">
         <h2>Your Interviews</h2>
-        <div className="interviews-section">
-          {hasPastInterviews ? (
-            userInterviews?.map((interview) => (
-              <InterviewCard key={interview.id} {...interview} />
-            ))
-          ) : (
-            <p>You haven&apos;t generate any interview yet</p>
-          )}
-        </div>
+        {hasPastInterviews ? (
+          <Carousel>
+            <CarouselContent>
+              {userInterviews?.map((interview) => (
+                <CarouselItem
+                  key={interview.id}
+                  className="md:basis-1/2 lg:basis-1/3"
+                >
+                  <InterviewCard {...interview} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="max-sm:-left-3 cursor-pointer" />
+            <CarouselNext className="max-sm:-right-3 cursor-pointer" />
+          </Carousel>
+        ) : (
+          <div className="p-4 text-center">
+            <p>You haven&apos;t generated any interviews yet.</p>
+          </div>
+        )}
       </section>
       <section className="flex flex-col gap-6 mt-8">
         <h2>Suggested Interviews</h2>
-        <div className="interviews-section">
-          {hasUpcomingInterviews ? (
-            latestInterviews?.map((interview) => (
-              <InterviewCard key={interview.id} {...interview} />
-            ))
-          ) : (
-            <p>There are no suggested interviews available</p>
-          )}
-        </div>
+
+        {hasUpcomingInterviews ? (
+          <Carousel>
+            <CarouselContent>
+              {latestInterviews?.map((interview) => (
+                <CarouselItem
+                  key={interview.id}
+                  className="md:basis-1/2 lg:basis-1/3"
+                >
+                  <InterviewCard {...interview} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="max-sm:-left-3 cursor-pointer " />
+            <CarouselNext className="max-sm:-right-3 cursor-pointer" />
+          </Carousel>
+        ) : (
+          <div className="p-4 text-center">
+            <p>There are no suggested interviews available.</p>
+          </div>
+        )}
       </section>
     </>
   );

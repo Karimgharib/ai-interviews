@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { vapi } from "@/lib/vapi.sdk";
 import { interviewer } from "@/constants";
+import { Loader2 } from "lucide-react"; // spinner icon
 
 enum CallStatus {
   INACTIVE = "INACTIVE",
@@ -32,6 +33,9 @@ const Agent = ({
   const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
   const [messages, setMessages] = useState<SavedMessage[]>([]);
 
+  // Loading state for the button
+  const loading = callStatus === CallStatus.CONNECTING;
+
   useEffect(() => {
     const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
     const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
@@ -39,7 +43,6 @@ const Agent = ({
     const onMessage = (message: Message) => {
       if (message.type === "transcript" && message.transcriptType === "final") {
         const newMessage = { role: message.role, content: message.transcript };
-
         setMessages((prev) => [...prev, newMessage]);
       }
     };
@@ -60,7 +63,7 @@ const Agent = ({
       vapi.off("call-start", onCallStart);
       vapi.off("call-end", onCallEnd);
       vapi.off("message", onMessage);
-      vapi.off("speach-start", onSpeechStart);
+      vapi.off("speech-start", onSpeechStart);
       vapi.off("speech-end", onSpeechEnd);
       vapi.off("error", onError);
     };
@@ -72,12 +75,12 @@ const Agent = ({
         router.push("/");
       }
     }
-  }, [messages, callStatus, type, userId]);
+  }, [messages, callStatus, type, userId, router]);
 
   const handleCall = async () => {
     setCallStatus(CallStatus.CONNECTING);
     if (type === "generate") {
-      await vapi.start(process.env.NEXT_PUBLIC_VAPI_ARABIC_WORKFLOW_ID!, {
+      await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
         variableValues: {
           username: userName,
           userid: userId,
@@ -99,15 +102,16 @@ const Agent = ({
       });
     }
   };
+
   const handleDisconnect = () => {
     setCallStatus(CallStatus.FINISHED);
-
     vapi.stop();
   };
 
   const latestMessage = messages[messages.length - 1]?.content;
   const isCallInactiveOrFinished =
     callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED;
+
   return (
     <>
       <div className="call-view">
@@ -166,15 +170,14 @@ const Agent = ({
       )}
 
       <div className="w-full flex justify-center mt-5">
-        {callStatus !== "ACTIVE" ? (
-          <button className="relative btn-call" onClick={handleCall}>
-            <span
-              className={cn(
-                "absolute animate-ping rounded-full opacity-75",
-                callStatus !== "CONNECTING " && "hidden"
-              )}
-            />
-            <span>{isCallInactiveOrFinished ? "Start" : ". . ."}</span>
+        {callStatus !== CallStatus.ACTIVE ? (
+          <button
+            className="btn-call flex flex-row gap-1"
+            onClick={handleCall}
+            disabled={loading}
+          >
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {loading ? "Connecting..." : "Start"}
           </button>
         ) : (
           <button className="btn-disconnect" onClick={handleDisconnect}>

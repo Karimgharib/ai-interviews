@@ -19,11 +19,10 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
-import { auth, storage } from "@/firebase/client";
+import { auth } from "@/firebase/client";
 import { signIn, signUp } from "@/lib/actions/auth.action";
-import { Input } from "./ui/input";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 const authFormSchema = (type: FormType) => {
   return z.object({
@@ -38,7 +37,10 @@ const AuthForm = ({ type }: { type: FormType }) => {
   const router = useRouter();
   const formSchema = authFormSchema(type);
 
-  // 1. Define your form.
+  const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setGoogleLoading] = useState(false);
+  const [isGithubLoading, setGithubLoading] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -50,6 +52,8 @@ const AuthForm = ({ type }: { type: FormType }) => {
 
   // Google Sign-in handler
   const handleGoogleSignIn = async () => {
+    setGoogleLoading(true);
+
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
@@ -63,11 +67,15 @@ const AuthForm = ({ type }: { type: FormType }) => {
     } catch (error) {
       toast.error("Google sign-in failed");
       console.error(error);
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
   // GitHub Sign-in handler
   const handleGithubSignIn = async () => {
+    setGithubLoading(true);
+
     const provider = new GithubAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
@@ -81,11 +89,15 @@ const AuthForm = ({ type }: { type: FormType }) => {
     } catch (error) {
       toast.error("GitHub sign-in failed");
       console.error(error);
+    } finally {
+      setGithubLoading(true);
     }
   };
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
+
     try {
       if (type === "sign-up") {
         const { name, email, password } = values;
@@ -138,6 +150,8 @@ const AuthForm = ({ type }: { type: FormType }) => {
     } catch (error) {
       console.log(error);
       toast.error(`There was an error: ${error}`);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -178,7 +192,8 @@ const AuthForm = ({ type }: { type: FormType }) => {
               placeholder="Enter your password"
               type="password"
             />
-            <Button className="btn" type="submit">
+            <Button type="submit" className="btn" disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{" "}
               {isSignIn ? "Sign in" : "Create an Account"}
             </Button>
           </form>
@@ -186,13 +201,27 @@ const AuthForm = ({ type }: { type: FormType }) => {
         <h6 className="text-center -my-5">Or</h6>
 
         <div className="max-md:flex-col flex justify gap-4">
-          <Button className="btnAuth" onClick={handleGoogleSignIn}>
+          <Button
+            className="btnAuth"
+            onClick={handleGoogleSignIn}
+            disabled={isGoogleLoading}
+          >
+            {isGoogleLoading && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
             Continue with Google
             <Image src="/google.png" alt="google" width={20} height={20} />
           </Button>
-          <Button className="btnAuth" onClick={handleGithubSignIn}>
+          <Button
+            className="btnAuth"
+            onClick={handleGithubSignIn}
+            disabled={isGithubLoading}
+          >
+            {isGithubLoading && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
             Continue with GitHub
-            <Image src="/github.png" alt="google" width={20} height={20} />
+            <Image src="/github.png" alt="github" width={20} height={20} />
           </Button>
         </div>
 

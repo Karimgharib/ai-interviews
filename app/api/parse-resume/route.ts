@@ -38,7 +38,23 @@ export async function POST(request: Request) {
     // Parse the cleaned response to JSON
     const { role, level, skills } = JSON.parse(cleanedResponse);
 
-    const interviewPrompt = `
+    const interviewPrompt =
+      // ` حضّر مقابلة عمل.
+      //     الدور الوظيفي هو: ${role}.
+      //     مستوى الخبرة المطلوب هو: ${level}.
+      //     التقنيات المستخدمة في الوظيفة هي: ${skills.join(", ")}.
+      //     يجب أن يكون التركيز في الأسئلة مزيجًا بين الأسئلة السلوكية والتقنية.
+      //     عدد الأسئلة المطلوب توليدها هو: 10.
+      //     رجاءً توليد الأسئلة باللغة العربية المصرية فقط.
+      //     يُرجى إنشاء 10 أسئلة فقط، تحتوي على مزيج متوازن من الأسئلة التقنية والسلوكية.
+      //     يرجى إرجاع الأسئلة فقط بدون أي نص إضافي.
+      //     سيتم قراءة الأسئلة من خلال مساعد صوتي، لذلك يُرجى عدم استخدام الرموز الخاصة مثل "/" أو "*" أو أي رموز قد تسبب مشاكل في القراءة.
+      //     قم بإرجاع الأسئلة بتنسيق كالتالي:
+      //     ["السؤال 1", "السؤال 2", "السؤال 3"]
+
+      //     شكرًا لك! <3
+      // `;
+      `
       Prepare a for a job interview.
       The job role is ${role}.
       The job experience level is ${level}.
@@ -50,7 +66,7 @@ export async function POST(request: Request) {
       The questions are going to be read by a voice assistant so do not use "/" or "*" or any other special characters which might break the voice assistant.
       Return the questions formatted like this:
       ["Question 1", "Question 2", "Question 3"]
-      
+
       Thank you! <3`;
 
     // Request AI to generate interview questions

@@ -1,4 +1,3 @@
-// import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import { isAuthenticated } from "@/lib/actions/auth.action";
 import { redirect } from "next/navigation";
