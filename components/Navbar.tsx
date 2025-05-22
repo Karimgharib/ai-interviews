@@ -56,9 +56,9 @@ const Navbar = async () => {
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={signOut} className="cursor-pointer">
             <LogOut />
-            <span onClick={signOut}>Log out</span>
+            <span>Log out</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
