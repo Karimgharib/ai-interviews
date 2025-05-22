@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { vapi } from "@/lib/vapi.sdk";
 import { interviewer } from "@/constants";
 import { Loader2 } from "lucide-react"; // spinner icon
+import { createFeedback } from "@/lib/actions/general.action";
 
 enum CallStatus {
   INACTIVE = "INACTIVE",
@@ -27,13 +28,14 @@ const Agent = ({
   interviewId,
   questions,
   photoURL,
+  feedbackId,
 }: AgentProps) => {
   const router = useRouter();
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
   const [messages, setMessages] = useState<SavedMessage[]>([]);
+  const [lastMessage, setLastMessage] = useState<string>("");
 
-  // Loading state for the button
   const loading = callStatus === CallStatus.CONNECTING;
 
   useEffect(() => {
@@ -70,9 +72,31 @@ const Agent = ({
   }, []);
 
   useEffect(() => {
+    if (messages.length > 0) {
+      setLastMessage(messages[messages.length - 1].content);
+    }
+
+    const handleGenerateFeedback = async (messages: SavedMessage[]) => {
+      const { success, feedbackId: id } = await createFeedback({
+        interviewId: interviewId!,
+        userId: userId!,
+        transcript: messages,
+        feedbackId,
+      });
+
+      if (success && id) {
+        router.push(`/interview/${interviewId}/feedback`);
+      } else {
+        console.log("Error saving feedback");
+        router.push("/");
+      }
+    };
+
     if (callStatus === CallStatus.FINISHED) {
       if (type === "generate") {
         router.push("/");
+      } else {
+        handleGenerateFeedback(messages);
       }
     }
   }, [messages, callStatus, type, userId, router]);

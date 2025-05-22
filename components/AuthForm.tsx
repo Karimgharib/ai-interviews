@@ -62,7 +62,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
       const idToken = await user.getIdToken();
       await signIn({ email: user.email!, idToken });
 
-      toast.success("Signed in with Google");
+      toast.success("Sign in successfully.");
       router.push("/");
     } catch (error) {
       toast.error("Google sign-in failed");
@@ -84,7 +84,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
       const idToken = await user.getIdToken();
       await signIn({ email: user.email!, idToken });
 
-      toast.success("Signed in with GitHub");
+      toast.success("Sign in successfully.");
       router.push("/");
     } catch (error) {
       toast.error("GitHub sign-in failed");
@@ -94,7 +94,6 @@ const AuthForm = ({ type }: { type: FormType }) => {
     }
   };
 
-  // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
 

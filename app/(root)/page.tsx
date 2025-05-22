@@ -38,7 +38,7 @@ const page = async () => {
           <div className="flex flex-col gap-4 max-w-lg">
             <p className="text-sm">Generate interview by call with ai</p>
             <Button asChild className="btn-primary max-sm:w-full">
-              <Link href="/interview">Generate</Link>
+              <Link href="/interview">Generate an interview</Link>
             </Button>
             {/* <Button asChild className="btn-primary">
               <Link href="/interview">Generate an Arabic interview</Link>
@@ -65,7 +65,7 @@ const page = async () => {
                   key={interview.id}
                   className="md:basis-1/2 lg:basis-1/3"
                 >
-                  <InterviewCard {...interview} />
+                  <InterviewCard {...interview} interviewId={interview.id} />
                 </CarouselItem>
               ))}
             </CarouselContent>
@@ -73,7 +73,7 @@ const page = async () => {
             <CarouselNext className="max-sm:-right-3 cursor-pointer" />
           </Carousel>
         ) : (
-          <div className="p-4 text-center">
+          <div className="p-4">
             <p>You haven&apos;t generated any interviews yet.</p>
           </div>
         )}
@@ -89,7 +89,7 @@ const page = async () => {
                   key={interview.id}
                   className="md:basis-1/2 lg:basis-1/3"
                 >
-                  <InterviewCard {...interview} />
+                  <InterviewCard {...interview} interviewId={interview.id} />
                 </CarouselItem>
               ))}
             </CarouselContent>
@@ -97,7 +97,7 @@ const page = async () => {
             <CarouselNext className="max-sm:-right-3 cursor-pointer" />
           </Carousel>
         ) : (
-          <div className="p-4 text-center">
+          <div className="p-4">
             <p>There are no suggested interviews available.</p>
           </div>
         )}

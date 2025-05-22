@@ -54,10 +54,6 @@ const Navbar = async () => {
               <User />
               <span>{user?.name}</span>
             </DropdownMenuItem>
-            <DropdownMenuItem disabled>
-              <Workflow />
-              <span>Role</span>
-            </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
